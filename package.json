@@ -1,6 +1,7 @@
 {
   "name": "bend-lang",
   "displayName": "Bend Language",
+  "publisher": "ppmpreetham",
   "description": "Syntax highlighting for Bend programming language",
   "version": "0.0.1",
   "engines": {

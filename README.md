@@ -12,6 +12,7 @@ Visual Studio Code extension providing syntax highlighting and language support 
   - Pattern matching
   - Native HVM functions
 
+
 ## Example
 
 ```bend
@@ -36,6 +37,8 @@ main =
 
 - This extension doesn't contribute any settings yet.
 
+## Contributions
+Contribute at [Github](https://github.com/ppmpreetham/bend-syntax-highlighter)
 ## Known Issues
 
 - This is an early version of the Bend language extension.

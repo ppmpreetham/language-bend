@@ -1,0 +1,271 @@
+{
+	"name": "Bend",
+	"scopeName": "source.bend",
+	"fileTypes": ["bend"],
+	"patterns": [
+	  { "include": "#comments" },
+	  { "include": "#imports" },
+	  { "include": "#top-level-definitions" },
+	  { "include": "#statements" },
+	  { "include": "#expressions" }
+	],
+	"repository": {
+	  "comments": {
+		"patterns": [
+		  {
+			"name": "comment.line.number-sign.bend",
+			"match": "#[^{].*$"
+		  },
+		  {
+			"name": "comment.block.bend",
+			"begin": "#{",
+			"end": "#}"
+		  }
+		]
+	  },
+	  "imports": {
+		"patterns": [
+		  {
+			"name": "keyword.control.import.bend",
+			"match": "\\b(import|from)\\b"
+		  },
+		  {
+			"match": "\\bfrom\\s+([.\\w/]+)\\s+import\\s+(?:\\*|([\\w/]+)(?:\\s+as\\s+([\\w/]+))?)",
+			"captures": {
+			  "1": { "name": "entity.name.namespace.bend" },
+			  "2": { "name": "entity.name.function.bend" },
+			  "3": { "name": "entity.name.function.bend" }
+			}
+		  }
+		]
+	  },
+	  "top-level-definitions": {
+		"patterns": [
+		  {
+			"name": "meta.function.bend",
+			"begin": "\\b(def)\\s+(?:(checked|unchecked)\\s+)?([A-Za-z0-9_.-/]+)\\s*\\(",
+			"beginCaptures": {
+			  "1": { "name": "storage.type.function.bend" },
+			  "2": { "name": "storage.modifier.bend" },
+			  "3": { "name": "entity.name.function.bend" }
+			},
+			"end": "\\)(?:\\s*->\\s*([A-Za-z0-9_.-/]+))?\\s*:",
+			"endCaptures": {
+			  "1": { "name": "entity.name.type.bend" }
+			},
+			"patterns": [
+			  { "include": "#parameters" }
+			]
+		  },
+		  {
+			"name": "meta.type.bend",
+			"begin": "\\b(type)\\s+([A-Za-z0-9_.-/]+)(?:\\(([^)]+)\\))?\\s*:",
+			"beginCaptures": {
+			  "1": { "name": "storage.type.bend" },
+			  "2": { "name": "entity.name.type.bend" },
+			  "3": { "name": "variable.parameter.type.bend" }
+			},
+			"end": "(?=\\b(def|type|object|hvm)\\b|\\Z)",
+			"patterns": [
+			  { "include": "#constructor-definition" }
+			]
+		  },
+		  {
+			"name": "meta.object.bend",
+			"begin": "\\b(object)\\s+([A-Za-z0-9_.-/]+)(?:\\(([^)]+)\\))?\\s*\\{",
+			"beginCaptures": {
+			  "1": { "name": "storage.type.bend" },
+			  "2": { "name": "entity.name.type.bend" },
+			  "3": { "name": "variable.parameter.type.bend" }
+			},
+			"end": "\\}",
+			"patterns": [
+			  { "include": "#field-definition" }
+			]
+		  },
+		  {
+			"name": "meta.hvm.bend",
+			"begin": "\\b(hvm)\\s+([A-Za-z0-9_.-/]+)(?:\\s*->\\s*([^:]+))?\\s*:",
+			"beginCaptures": {
+			  "1": { "name": "storage.type.bend" },
+			  "2": { "name": "entity.name.function.bend" },
+			  "3": { "name": "entity.name.type.bend" }
+			},
+			"end": "(?=\\b(def|type|object|hvm)\\b|\\Z)",
+			"patterns": [
+			  { "include": "#hvm-rule" }
+			]
+		  },
+		  {
+			"name": "meta.function.fun.bend",
+			"match": "([A-Za-z0-9_.-/]+)(?:\\s*:\\s*([^=]+))?\\s*=",
+			"captures": {
+			  "1": { "name": "entity.name.function.bend" },
+			  "2": { "name": "entity.name.type.bend" }
+			}
+		  },
+		  {
+			"name": "meta.type.fun.bend",
+			"begin": "\\b(type)\\s+([A-Za-z0-9_.-/]+)(?:\\(([^)]+)\\))?\\s*=",
+			"beginCaptures": {
+			  "1": { "name": "storage.type.bend" },
+			  "2": { "name": "entity.name.type.bend" },
+			  "3": { "name": "variable.parameter.type.bend" }
+			},
+			"end": "(?=\\b(def|type|object|hvm)\\b|\\Z)",
+			"patterns": [
+			  { "include": "#fun-constructor-definition" }
+			]
+		  }
+		]
+	  },
+	  "constructor-definition": {
+		"patterns": [
+		  {
+			"match": "\\s*([A-Za-z0-9_.-/]+)(?:\\s*\\{([^}]*)\\})?",
+			"captures": {
+			  "1": { "name": "entity.name.function.constructor.bend" },
+			  "2": { "patterns": [{ "include": "#field-definition" }] }
+			}
+		  }
+		]
+	  },
+	  "fun-constructor-definition": {
+		"patterns": [
+		  {
+			"match": "\\(([A-Za-z0-9_.-/]+)(?:\\s+([^)]+))?\\)",
+			"captures": {
+			  "1": { "name": "entity.name.function.constructor.bend" },
+			  "2": { "patterns": [{ "include": "#type-expression" }] }
+			}
+		  },
+		  {
+			"match": "([A-Za-z0-9_.-/]+)",
+			"captures": {
+			  "1": { "name": "entity.name.function.constructor.bend" }
+			}
+		  }
+		]
+	  },
+	  "field-definition": {
+		"patterns": [
+		  {
+			"match": "(~)?([A-Za-z0-9_.-/]+)(?:\\s*:\\s*([A-Za-z0-9_.-/]+))?",
+			"captures": {
+			  "1": { "name": "keyword.operator.recursive.bend" },
+			  "2": { "name": "variable.other.member.bend" },
+			  "3": { "name": "entity.name.type.bend" }
+			}
+		  }
+		]
+	  },
+	  "parameters": {
+		"patterns": [
+		  {
+			"match": "([A-Za-z0-9_.-/]+)(?:\\s*:\\s*([A-Za-z0-9_.-/]+))?",
+			"captures": {
+			  "1": { "name": "variable.parameter.bend" },
+			  "2": { "name": "entity.name.type.bend" }
+			}
+		  }
+		]
+	  },
+	  "statements": {
+		"patterns": [
+		  {
+			"name": "keyword.control.flow.bend",
+			"match": "\\b(return|if|elif|else|switch|case|match|fold|bend|when|open|with)\\b"
+		  },
+		  {
+			"name": "keyword.operator.assignment.bend",
+			"match": "\\b(use)\\b|(?<![<>=!])=(?![=])|\\+=|-=|\\*=|/=|&=|\\|=|\\^=|@="
+		  },
+		  {
+			"name": "keyword.control.import.bend",
+			"match": "<-"
+		  }
+		]
+	  },
+	  "expressions": {
+		"patterns": [
+		  {
+			"name": "keyword.other.bend",
+			"match": "\\b(lambda|λ)\\b"
+		  },
+		  {
+			"name": "constant.language.bend",
+			"match": "\\*"
+		  },
+		  {
+			"name": "constant.numeric.bend",
+			"match": "[+-]?(?:0x[0-9a-fA-F]+(?:\\.[0-9a-fA-F]+)?|0b[01]+(?:\\.[01]+)?|\\d+(?:\\.\\d+)?)"
+		  },
+		  {
+			"name": "string.quoted.double.bend",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+			  {
+				"name": "constant.character.escape.bend",
+				"match": "\\\\u\\{[0-9a-fA-F]+\\}"
+			  }
+			]
+		  },
+		  {
+			"name": "string.quoted.single.bend",
+			"begin": "'",
+			"end": "'",
+			"patterns": [
+			  {
+				"name": "constant.character.escape.bend",
+				"match": "\\\\u\\{[0-9a-fA-F]+\\}"
+			  }
+			]
+		  },
+		  {
+			"name": "constant.other.symbol.bend",
+			"begin": "`",
+			"end": "`"
+		  },
+		  {
+			"name": "keyword.operator.bend",
+			"match": "\\+|-|\\*|/|%|\\*\\*|==|!=|<|>|<=|>=|&|\\||\\^|>>|<<"
+		  },
+		  {
+			"name": "support.function.bend",
+			"match": "\\b([A-Za-z0-9_.-/]+)(?=\\s*\\()"
+		  },
+		  {
+			"name": "variable.other.bend",
+			"match": "\\$[A-Za-z0-9_.-/]+"
+		  },
+		  {
+			"name": "variable.other.bend",
+			"match": "\\b[A-Za-z0-9_.-/]+"
+		  }
+		]
+	  },
+	  "type-expression": {
+		"patterns": [
+		  {
+			"name": "support.type.primitive.bend",
+			"match": "\\b(Any|None|_|u24|i24|f24)\\b"
+		  },
+		  {
+			"name": "entity.name.type.bend",
+			"match": "\\b[A-Za-z0-9_.-/]+\\b"
+		  },
+		  {
+			"name": "keyword.operator.type.bend",
+			"match": "->"
+		  }
+		]
+	  },
+	  "hvm-rule": {
+		"match": "([^\\n]+)",
+		"captures": {
+		  "1": { "name": "entity.other.attribute-name.bend" }
+		}
+	  }
+	}
+  }
